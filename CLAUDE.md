@@ -25,3 +25,5 @@
 - `docs/FEATURES/main.md`: 첫 메인 화면 구성
 - `docs/FEATURES/game_rule.md`: 게임 룰에 대한 상세 내용
 - `docs/FEATURES/mission1.md`: Mission 1 난이도 및 규칙
+- `docs/PLAN.md`: Phase별 목표를 세운 문서
+- `docs/design/phaseN.md`: `PLAN.md`에 정의된 Phase N을 어떻게 구현할지 정리한 설계 문서. Phase마다 1개 파일로 작성한다 (예: `docs/design/phase1.md`, `docs/design/phase2.md`, ...). 구현 전 사람이 검토하는 용도이며, 검토 후 수정 사항이 있으면 해당 파일에 반영한다.
