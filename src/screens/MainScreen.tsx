@@ -15,25 +15,25 @@ const menuItems: MenuItem[] = [
 const missionItemCount = missions.length
 
 interface MainScreenProps {
-  onStart: () => void
+  onStart: (missionId: string) => void
   onExit: () => void
 }
 
 function MainScreen({ onStart, onExit }: MainScreenProps) {
   const [focusedIndex, setFocusedIndex] = useState(0)
-  const [selectedMissionId, setSelectedMissionId] = useState(missions[0]?.id)
+  const [selectedMissionId, setSelectedMissionId] = useState(missions[0].id)
 
   const runMenuItem = useCallback(
     (item: MenuItem) => {
       if (item.type === 'mission') {
         setSelectedMissionId(item.id)
       } else if (item.id === 'start') {
-        onStart()
+        onStart(selectedMissionId)
       } else {
         onExit()
       }
     },
-    [onStart, onExit],
+    [onStart, onExit, selectedMissionId],
   )
 
   useEffect(() => {

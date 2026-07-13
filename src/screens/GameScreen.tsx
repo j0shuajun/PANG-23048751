@@ -22,19 +22,11 @@ import {
   resolveWireBubbleCollisions,
   updateBubble,
 } from '../game/update'
+import { missionLevels } from '../game/missionLevels'
 import './GameScreen.css'
 
 function createPlayer(): Player {
   return { x: PLAYER_START_X, y: PLAYER_Y, width: PLAYER_WIDTH, height: PLAYER_HEIGHT }
-}
-
-// Phase 5~6 확인용 테스트 데이터. 실제 Mission 데이터 연결은 Phase 10에서 처리한다.
-function createTestBubbles(): Bubble[] {
-  return [{ x: 200, y: 100, vx: 90, vy: 0, sizeLevel: 0 }]
-}
-
-function createTestBlocks(): Block[] {
-  return [{ x: 500, y: 340, width: 150, height: 20 }]
 }
 
 function drawBackground(context: CanvasRenderingContext2D) {
@@ -141,11 +133,12 @@ function drawBubble(context: CanvasRenderingContext2D, bubble: Bubble) {
 }
 
 interface GameScreenProps {
+  missionId: string
   onWin: () => void
   onLose: () => void
 }
 
-function GameScreen({ onWin, onLose }: GameScreenProps) {
+function GameScreen({ missionId, onWin, onLose }: GameScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [lives, setLives] = useState(STARTING_LIVES)
 
@@ -156,10 +149,11 @@ function GameScreen({ onWin, onLose }: GameScreenProps) {
       return
     }
 
+    const level = missionLevels[missionId] ?? missionLevels.mission1
     const player = createPlayer()
     let wires: Wire[] = []
-    let bubbles: Bubble[] = createTestBubbles()
-    const blocks: Block[] = createTestBlocks()
+    let bubbles: Bubble[] = level.bubbles.map((bubble) => ({ ...bubble }))
+    const blocks: Block[] = level.blocks.map((block) => ({ ...block }))
     const pressedKeys = new Set<string>()
     let lastTimestamp: number | null = null
     let animationFrameId: number
@@ -262,7 +256,7 @@ function GameScreen({ onWin, onLose }: GameScreenProps) {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [onWin, onLose])
+  }, [missionId, onWin, onLose])
 
   return (
     <div className="game-screen">

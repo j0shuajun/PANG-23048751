@@ -10,10 +10,12 @@ type Outcome = 'win' | 'lose'
 function App() {
   const [screen, setScreen] = useState<ScreenName>('main')
   const [outcome, setOutcome] = useState<Outcome>('win')
+  const [missionId, setMissionId] = useState('mission1')
 
   if (screen === 'game') {
     return (
       <GameScreen
+        missionId={missionId}
         onWin={() => {
           setOutcome('win')
           setScreen('result')
@@ -40,7 +42,15 @@ function App() {
     return <ExitScreen />
   }
 
-  return <MainScreen onStart={() => setScreen('game')} onExit={() => setScreen('exit')} />
+  return (
+    <MainScreen
+      onStart={(selectedMissionId) => {
+        setMissionId(selectedMissionId)
+        setScreen('game')
+      }}
+      onExit={() => setScreen('exit')}
+    />
+  )
 }
 
 export default App
