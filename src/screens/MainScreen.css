@@ -23,34 +23,40 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.55);
   box-shadow: var(--shadow);
+  border: 2px solid transparent;
+}
+
+.main-screen__mission-select.is-focused {
+  border-color: var(--accent);
 }
 
 .main-screen__mission-select h2 {
   color: #0b3d5c;
 }
 
-.main-screen__mission-select ul {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
+.main-screen__mission-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
 }
 
-.main-screen__mission-select li {
-  padding: 4px 12px;
-  border-radius: 5px;
-  border: 2px solid transparent;
-  color: #0b3d5c;
-  cursor: pointer;
-}
-
-.main-screen__mission-select li.is-focused {
-  color: var(--accent);
-  background: var(--accent-bg);
-  border-color: var(--accent);
-}
-
-.main-screen__mission-select li.is-selected {
+.main-screen__mission-name {
+  min-width: 96px;
   font-weight: 700;
+  color: #0b3d5c;
+}
+
+.main-screen__arrow {
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 10px;
+  border-radius: 5px;
+  color: #0b3d5c;
+  background: transparent;
+  border: 2px solid rgba(11, 61, 92, 0.25);
+  cursor: pointer;
 }
 
 .main-screen__actions {

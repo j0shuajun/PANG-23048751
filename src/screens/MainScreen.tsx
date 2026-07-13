@@ -2,17 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { missions } from '../data/missions'
 import './MainScreen.css'
 
-type MenuItem =
-  | { type: 'mission'; id: string; label: string }
-  | { type: 'action'; id: 'start' | 'exit'; label: string }
-
-const menuItems: MenuItem[] = [
-  ...missions.map((mission) => ({ type: 'mission', id: mission.id, label: mission.name }) as const),
-  { type: 'action', id: 'start', label: '시작' },
-  { type: 'action', id: 'exit', label: '종료' },
-]
-
-const missionItemCount = missions.length
+const ROW_MISSION_SELECT = 0
+const ROW_START = 1
+const ROW_EXIT = 2
+const ROW_COUNT = 3
 
 interface MainScreenProps {
   onStart: (missionId: string) => void
@@ -20,75 +13,74 @@ interface MainScreenProps {
 }
 
 function MainScreen({ onStart, onExit }: MainScreenProps) {
-  const [focusedIndex, setFocusedIndex] = useState(0)
-  const [selectedMissionId, setSelectedMissionId] = useState(missions[0].id)
+  const [focusedRow, setFocusedRow] = useState(ROW_MISSION_SELECT)
+  const [selectedMissionIndex, setSelectedMissionIndex] = useState(0)
 
-  const runMenuItem = useCallback(
-    (item: MenuItem) => {
-      if (item.type === 'mission') {
-        setSelectedMissionId(item.id)
-      } else if (item.id === 'start') {
-        onStart(selectedMissionId)
-      } else {
-        onExit()
-      }
-    },
-    [onStart, onExit, selectedMissionId],
-  )
+  const changeMission = useCallback((delta: number) => {
+    setSelectedMissionIndex((index) => (index + delta + missions.length) % missions.length)
+  }, [])
+
+  const runFocusedRow = useCallback(() => {
+    if (focusedRow === ROW_START) {
+      onStart(missions[selectedMissionIndex].id)
+    } else if (focusedRow === ROW_EXIT) {
+      onExit()
+    }
+  }, [focusedRow, onStart, onExit, selectedMissionIndex])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown') {
-        setFocusedIndex((index) => (index + 1) % menuItems.length)
+        setFocusedRow((row) => (row + 1) % ROW_COUNT)
       } else if (event.key === 'ArrowUp') {
-        setFocusedIndex((index) => (index - 1 + menuItems.length) % menuItems.length)
+        setFocusedRow((row) => (row - 1 + ROW_COUNT) % ROW_COUNT)
+      } else if (event.key === 'ArrowRight' && focusedRow === ROW_MISSION_SELECT) {
+        changeMission(1)
+      } else if (event.key === 'ArrowLeft' && focusedRow === ROW_MISSION_SELECT) {
+        changeMission(-1)
       } else if (event.key === 'Enter') {
-        runMenuItem(menuItems[focusedIndex])
+        runFocusedRow()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [focusedIndex, runMenuItem])
+  }, [focusedRow, changeMission, runFocusedRow])
+
+  const selectedMission = missions[selectedMissionIndex]
 
   return (
     <div className="main-screen">
       <h1 className="main-screen__title">PANG</h1>
 
-      <div className="main-screen__mission-select">
+      <div className={`main-screen__mission-select${focusedRow === ROW_MISSION_SELECT ? ' is-focused' : ''}`}>
         <h2>게임 선택</h2>
-        <ul>
-          {menuItems.slice(0, missionItemCount).map((item, index) => {
-            const classNames = [
-              index === focusedIndex ? 'is-focused' : '',
-              item.id === selectedMissionId ? 'is-selected' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')
-
-            return (
-              <li key={item.id} className={classNames || undefined} onClick={() => runMenuItem(item)}>
-                {item.label}
-              </li>
-            )
-          })}
-        </ul>
+        <div className="main-screen__mission-carousel">
+          <button type="button" className="main-screen__arrow" onClick={() => changeMission(-1)}>
+            ◀
+          </button>
+          <span className="main-screen__mission-name">{selectedMission.name}</span>
+          <button type="button" className="main-screen__arrow" onClick={() => changeMission(1)}>
+            ▶
+          </button>
+        </div>
       </div>
 
       <div className="main-screen__actions">
-        {menuItems.slice(missionItemCount).map((item, i) => {
-          const index = missionItemCount + i
-          return (
-            <button
-              key={item.id}
-              type="button"
-              className={`main-screen__button${index === focusedIndex ? ' is-focused' : ''}`}
-              onClick={() => runMenuItem(item)}
-            >
-              {item.label}
-            </button>
-          )
-        })}
+        <button
+          type="button"
+          className={`main-screen__button${focusedRow === ROW_START ? ' is-focused' : ''}`}
+          onClick={() => onStart(selectedMission.id)}
+        >
+          시작
+        </button>
+        <button
+          type="button"
+          className={`main-screen__button${focusedRow === ROW_EXIT ? ' is-focused' : ''}`}
+          onClick={onExit}
+        >
+          종료
+        </button>
       </div>
     </div>
   )
