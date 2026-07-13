@@ -12,7 +12,7 @@ import {
   WIRE_SPEED,
   WIRE_WIDTH,
 } from '../game/constants'
-import { isWireBlockedByBlock, resolveBubbleBlockCollision, updateBubble } from '../game/update'
+import { isWireBlockedByBlock, resolveBubbleBlockCollision, resolveWireBubbleCollisions, updateBubble } from '../game/update'
 import './GameScreen.css'
 
 function createPlayer(): Player {
@@ -75,6 +75,10 @@ function GameScreen() {
         const moved = updateBubble(bubble, deltaTime)
         return blocks.reduce((current, block) => resolveBubbleBlockCollision(current, block), moved)
       })
+
+      const resolved = resolveWireBubbleCollisions(wires, bubbles)
+      wires = resolved.wires
+      bubbles = resolved.bubbles
     }
 
     const draw = () => {
