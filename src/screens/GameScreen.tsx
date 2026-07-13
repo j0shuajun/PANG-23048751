@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import type { Player, Wire } from '../game/types'
+import type { Bubble, Player, Wire } from '../game/types'
 import {
+  BUBBLE_SIZE_CONFIG,
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   PLAYER_HEIGHT,
@@ -11,10 +12,16 @@ import {
   WIRE_SPEED,
   WIRE_WIDTH,
 } from '../game/constants'
+import { updateBubble } from '../game/update'
 import './GameScreen.css'
 
 function createPlayer(): Player {
   return { x: PLAYER_START_X, y: PLAYER_Y, width: PLAYER_WIDTH, height: PLAYER_HEIGHT }
+}
+
+// Phase 5 확인용 테스트 데이터. 실제 Mission 데이터 연결은 Phase 10에서 처리한다.
+function createTestBubbles(): Bubble[] {
+  return [{ x: 200, y: 100, vx: 90, vy: 0, sizeLevel: 0 }]
 }
 
 function GameScreen() {
@@ -29,6 +36,7 @@ function GameScreen() {
 
     const player = createPlayer()
     let wires: Wire[] = []
+    let bubbles: Bubble[] = createTestBubbles()
     const pressedKeys = new Set<string>()
     let lastTimestamp: number | null = null
     let animationFrameId: number
@@ -57,6 +65,8 @@ function GameScreen() {
       wires = wires
         .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaTime }))
         .filter((wire) => wire.y > 0)
+
+      bubbles = bubbles.map((bubble) => updateBubble(bubble, deltaTime))
     }
 
     const draw = () => {
@@ -72,6 +82,14 @@ function GameScreen() {
         context.moveTo(wire.x, player.y)
         context.lineTo(wire.x, wire.y)
         context.stroke()
+      }
+
+      context.fillStyle = '#3ba0ff'
+      for (const bubble of bubbles) {
+        const { radius } = BUBBLE_SIZE_CONFIG[bubble.sizeLevel]
+        context.beginPath()
+        context.arc(bubble.x, bubble.y, radius, 0, Math.PI * 2)
+        context.fill()
       }
     }
 
