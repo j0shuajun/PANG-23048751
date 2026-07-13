@@ -1,5 +1,7 @@
 import type { Block, Bubble, BubbleSizeLevel, Player, Wire } from './types'
-import { BUBBLE_HORIZONTAL_SPEED, BUBBLE_SIZE_CONFIG, CANVAS_HEIGHT, CANVAS_WIDTH, GRAVITY } from './constants'
+import { BUBBLE_HORIZONTAL_SPEED, BUBBLE_SIZE_CONFIG, CANVAS_WIDTH, GRAVITY, GROUND_HEIGHT, CANVAS_HEIGHT } from './constants'
+
+const FLOOR_Y = CANVAS_HEIGHT - GROUND_HEIGHT
 
 export function updateBubble(bubble: Bubble, deltaTime: number): Bubble {
   const { radius, bounceVelocity } = BUBBLE_SIZE_CONFIG[bubble.sizeLevel]
@@ -9,8 +11,8 @@ export function updateBubble(bubble: Bubble, deltaTime: number): Bubble {
   x += vx * deltaTime
   y += vy * deltaTime
 
-  if (y + radius >= CANVAS_HEIGHT) {
-    y = CANVAS_HEIGHT - radius
+  if (y + radius >= FLOOR_Y) {
+    y = FLOOR_Y - radius
     vy = -bounceVelocity
   }
   if (y - radius <= 0) {

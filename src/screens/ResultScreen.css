@@ -1,0 +1,47 @@
+.result-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.result-screen--win {
+  background: linear-gradient(180deg, #ffe08a 0%, #ffd166 40%, #8fd694 100%);
+}
+
+.result-screen--lose {
+  background: linear-gradient(180deg, #4a4a55 0%, #742d3a 100%);
+}
+
+.result-screen__title {
+  font-size: 3rem;
+  margin: 0;
+  color: #fffbea;
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.3),
+    0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.result-screen__message {
+  font-size: 1.2rem;
+  color: #fffbea;
+}
+
+.result-screen__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-screen__button {
+  font-size: 16px;
+  padding: 8px 24px;
+  border-radius: 5px;
+  color: #0b3d5c;
+  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid rgba(11, 61, 92, 0.25);
+  cursor: pointer;
+}

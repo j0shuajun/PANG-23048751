@@ -4,4 +4,12 @@
   justify-content: center;
   min-height: 100vh;
   text-align: center;
+  background: linear-gradient(180deg, #2b3a55 0%, #4f6a8f 100%);
+}
+
+.exit-screen__message {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fffbea;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
 }
