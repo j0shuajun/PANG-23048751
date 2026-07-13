@@ -1,6 +1,16 @@
 import { useEffect, useRef } from 'react'
-import type { Player } from '../game/types'
-import { CANVAS_HEIGHT, CANVAS_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, PLAYER_START_X, PLAYER_WIDTH, PLAYER_Y } from '../game/constants'
+import type { Player, Wire } from '../game/types'
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  PLAYER_HEIGHT,
+  PLAYER_SPEED,
+  PLAYER_START_X,
+  PLAYER_WIDTH,
+  PLAYER_Y,
+  WIRE_SPEED,
+  WIRE_WIDTH,
+} from '../game/constants'
 import './GameScreen.css'
 
 function createPlayer(): Player {
@@ -18,12 +28,16 @@ function GameScreen() {
     }
 
     const player = createPlayer()
+    let wires: Wire[] = []
     const pressedKeys = new Set<string>()
     let lastTimestamp: number | null = null
     let animationFrameId: number
 
     const handleKeyDown = (event: KeyboardEvent) => {
       pressedKeys.add(event.key)
+      if (event.key === ' ' && wires.length === 0) {
+        wires.push({ x: player.x + player.width / 2, y: player.y })
+      }
     }
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key)
@@ -39,12 +53,26 @@ function GameScreen() {
         player.x += PLAYER_SPEED * deltaTime
       }
       player.x = Math.max(0, Math.min(CANVAS_WIDTH - player.width, player.x))
+
+      wires = wires
+        .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaTime }))
+        .filter((wire) => wire.y > 0)
     }
 
     const draw = () => {
       context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
       context.fillStyle = '#aa3bff'
       context.fillRect(player.x, player.y, player.width, player.height)
+
+      context.strokeStyle = '#aa3bff'
+      context.lineWidth = WIRE_WIDTH
+      for (const wire of wires) {
+        context.beginPath()
+        context.moveTo(wire.x, player.y)
+        context.lineTo(wire.x, wire.y)
+        context.stroke()
+      }
     }
 
     const loop = (timestamp: number) => {

@@ -4,3 +4,8 @@ export interface Player {
   width: number
   height: number
 }
+
+export interface Wire {
+  x: number
+  y: number
+}
