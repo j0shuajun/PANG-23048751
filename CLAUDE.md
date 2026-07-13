@@ -16,3 +16,12 @@
 - `npm run lint`: oxlint로 정적 분석 수행
 - `npm run dev`: 로컬 개발 서버를 띄워 브라우저에서 직접 동작 확인
 - `npm run preview`: 프로덕션 빌드 결과물을 로컬에서 미리보기
+
+## 문서 구조
+
+게임 기획 관련 문서는 아래와 같이 구분해서 관리한다.
+
+- `docs/PRD.md`: 팡(PANG) 게임의 전체 개요와 핵심 규칙(Object 구성, Pang KATA 규칙)
+- `docs/FEATURES/main.md`: 첫 메인 화면 구성
+- `docs/FEATURES/game_rule.md`: 게임 룰에 대한 상세 내용
+- `docs/FEATURES/mission1.md`: Mission 1 난이도 및 규칙
