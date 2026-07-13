@@ -1,4 +1,4 @@
-import type { Block, Bubble, BubbleSizeLevel, Wire } from './types'
+import type { Block, Bubble, BubbleSizeLevel, Player, Wire } from './types'
 import { BUBBLE_HORIZONTAL_SPEED, BUBBLE_SIZE_CONFIG, CANVAS_HEIGHT, CANVAS_WIDTH, GRAVITY } from './constants'
 
 export function updateBubble(bubble: Bubble, deltaTime: number): Bubble {
@@ -86,4 +86,15 @@ export function resolveWireBubbleCollisions(
   }
 
   return { wires: survivingWires, bubbles: remainingBubbles }
+}
+
+export function isPlayerHitByBubble(player: Player, bubble: Bubble): boolean {
+  const { radius } = BUBBLE_SIZE_CONFIG[bubble.sizeLevel]
+
+  const closestX = Math.max(player.x, Math.min(bubble.x, player.x + player.width))
+  const closestY = Math.max(player.y, Math.min(bubble.y, player.y + player.height))
+  const dx = bubble.x - closestX
+  const dy = bubble.y - closestY
+
+  return dx * dx + dy * dy <= radius * radius
 }

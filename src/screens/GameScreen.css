@@ -1,9 +1,17 @@
 .game-screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   min-height: 100vh;
   text-align: center;
+}
+
+.game-screen__hud {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-h);
 }
 
 .game-screen__canvas {

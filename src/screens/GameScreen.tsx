@@ -1,18 +1,26 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Block, Bubble, Player, Wire } from '../game/types'
 import {
   BUBBLE_SIZE_CONFIG,
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   PLAYER_HEIGHT,
+  PLAYER_INVULNERABLE_MS,
   PLAYER_SPEED,
   PLAYER_START_X,
   PLAYER_WIDTH,
   PLAYER_Y,
+  STARTING_LIVES,
   WIRE_SPEED,
   WIRE_WIDTH,
 } from '../game/constants'
-import { isWireBlockedByBlock, resolveBubbleBlockCollision, resolveWireBubbleCollisions, updateBubble } from '../game/update'
+import {
+  isPlayerHitByBubble,
+  isWireBlockedByBlock,
+  resolveBubbleBlockCollision,
+  resolveWireBubbleCollisions,
+  updateBubble,
+} from '../game/update'
 import './GameScreen.css'
 
 function createPlayer(): Player {
@@ -28,8 +36,13 @@ function createTestBlocks(): Block[] {
   return [{ x: 500, y: 340, width: 150, height: 20 }]
 }
 
-function GameScreen() {
+interface GameScreenProps {
+  onLose: () => void
+}
+
+function GameScreen({ onLose }: GameScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [lives, setLives] = useState(STARTING_LIVES)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -46,6 +59,10 @@ function GameScreen() {
     let lastTimestamp: number | null = null
     let animationFrameId: number
 
+    let livesRemaining = STARTING_LIVES
+    let invulnerableUntil = 0
+    let hasEnded = false
+
     const handleKeyDown = (event: KeyboardEvent) => {
       pressedKeys.add(event.key)
       if (event.key === ' ' && wires.length === 0) {
@@ -58,7 +75,7 @@ function GameScreen() {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
 
-    const update = (deltaTime: number) => {
+    const update = (deltaTime: number, timestamp: number) => {
       if (pressedKeys.has('ArrowLeft')) {
         player.x -= PLAYER_SPEED * deltaTime
       }
@@ -79,6 +96,19 @@ function GameScreen() {
       const resolved = resolveWireBubbleCollisions(wires, bubbles)
       wires = resolved.wires
       bubbles = resolved.bubbles
+
+      if (timestamp >= invulnerableUntil && bubbles.some((bubble) => isPlayerHitByBubble(player, bubble))) {
+        livesRemaining -= 1
+        setLives(livesRemaining)
+        invulnerableUntil = timestamp + PLAYER_INVULNERABLE_MS
+
+        if (livesRemaining <= 0) {
+          hasEnded = true
+          onLose()
+        } else {
+          player.x = PLAYER_START_X
+        }
+      }
     }
 
     const draw = () => {
@@ -117,7 +147,10 @@ function GameScreen() {
       const deltaTime = (timestamp - lastTimestamp) / 1000
       lastTimestamp = timestamp
 
-      update(deltaTime)
+      update(deltaTime, timestamp)
+      if (hasEnded) {
+        return
+      }
       draw()
 
       animationFrameId = requestAnimationFrame(loop)
@@ -129,10 +162,11 @@ function GameScreen() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [])
+  }, [onLose])
 
   return (
     <div className="game-screen">
+      <div className="game-screen__hud">목숨: {lives}</div>
       <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="game-screen__canvas" />
     </div>
   )

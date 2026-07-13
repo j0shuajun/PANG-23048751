@@ -20,3 +20,6 @@ export const BUBBLE_SIZE_CONFIG: Record<BubbleSizeLevel, { radius: number; bounc
   1: { radius: 26, bounceVelocity: 460 },
   2: { radius: 15, bounceVelocity: 320 },
 }
+
+export const STARTING_LIVES = 3
+export const PLAYER_INVULNERABLE_MS = 1200
