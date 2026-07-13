@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type { Bubble, Player, Wire } from '../game/types'
+import type { Block, Bubble, Player, Wire } from '../game/types'
 import {
   BUBBLE_SIZE_CONFIG,
   CANVAS_HEIGHT,
@@ -12,16 +12,20 @@ import {
   WIRE_SPEED,
   WIRE_WIDTH,
 } from '../game/constants'
-import { updateBubble } from '../game/update'
+import { isWireBlockedByBlock, resolveBubbleBlockCollision, updateBubble } from '../game/update'
 import './GameScreen.css'
 
 function createPlayer(): Player {
   return { x: PLAYER_START_X, y: PLAYER_Y, width: PLAYER_WIDTH, height: PLAYER_HEIGHT }
 }
 
-// Phase 5 확인용 테스트 데이터. 실제 Mission 데이터 연결은 Phase 10에서 처리한다.
+// Phase 5~6 확인용 테스트 데이터. 실제 Mission 데이터 연결은 Phase 10에서 처리한다.
 function createTestBubbles(): Bubble[] {
   return [{ x: 200, y: 100, vx: 90, vy: 0, sizeLevel: 0 }]
+}
+
+function createTestBlocks(): Block[] {
+  return [{ x: 500, y: 340, width: 150, height: 20 }]
 }
 
 function GameScreen() {
@@ -37,6 +41,7 @@ function GameScreen() {
     const player = createPlayer()
     let wires: Wire[] = []
     let bubbles: Bubble[] = createTestBubbles()
+    const blocks: Block[] = createTestBlocks()
     const pressedKeys = new Set<string>()
     let lastTimestamp: number | null = null
     let animationFrameId: number
@@ -64,13 +69,21 @@ function GameScreen() {
 
       wires = wires
         .map((wire) => ({ ...wire, y: wire.y - WIRE_SPEED * deltaTime }))
-        .filter((wire) => wire.y > 0)
+        .filter((wire) => wire.y > 0 && !blocks.some((block) => isWireBlockedByBlock(wire, block)))
 
-      bubbles = bubbles.map((bubble) => updateBubble(bubble, deltaTime))
+      bubbles = bubbles.map((bubble) => {
+        const moved = updateBubble(bubble, deltaTime)
+        return blocks.reduce((current, block) => resolveBubbleBlockCollision(current, block), moved)
+      })
     }
 
     const draw = () => {
       context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
+      context.fillStyle = '#8a6d3b'
+      for (const block of blocks) {
+        context.fillRect(block.x, block.y, block.width, block.height)
+      }
 
       context.fillStyle = '#aa3bff'
       context.fillRect(player.x, player.y, player.width, player.height)

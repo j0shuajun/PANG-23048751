@@ -19,3 +19,10 @@ export interface Bubble {
   vy: number
   sizeLevel: BubbleSizeLevel
 }
+
+export interface Block {
+  x: number
+  y: number
+  width: number
+  height: number
+}
