@@ -37,4 +37,17 @@ export const missionLevels: Record<string, MissionLevel> = {
       { x: 520, y: 220, width: 130, height: 20 },
     ],
   },
+  mission5: {
+    bubbles: [
+      { x: 180, y: 80, vx: 150, vy: 0, sizeLevel: 0 },
+      { x: 620, y: 80, vx: -150, vy: 0, sizeLevel: 0 },
+      { x: 350, y: 140, vx: -140, vy: 0, sizeLevel: 1 },
+      { x: 450, y: 140, vx: 140, vy: 0, sizeLevel: 1 },
+    ],
+    blocks: [
+      { x: 120, y: 320, width: 120, height: 20 },
+      { x: 340, y: 240, width: 120, height: 20 },
+      { x: 560, y: 320, width: 120, height: 20 },
+    ],
+  },
 }
